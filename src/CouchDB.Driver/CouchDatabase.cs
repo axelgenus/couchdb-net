@@ -415,7 +415,7 @@ namespace CouchDB.Driver
                 {
                     continue;
                 }
-                
+
                 MatchCollection matches = _feedChangeLineStartPattern.Matches(line);
                 for (var i = 0; i < matches.Count; i++)
                 {
@@ -582,6 +582,24 @@ namespace CouchDB.Driver
         #endregion
 
         #region Utils
+
+        /// <inheritdoc />
+        public async Task<Stream> GetAttachmentStreamAsync(CouchAttachment attachment, CancellationToken cancellationToken = default)
+        {
+            Check.NotNull(attachment, nameof(attachment));
+
+            if (attachment.Uri == null)
+            {
+                throw new InvalidOperationException("The attachment is not uploaded yet.");
+            }
+
+            return await NewRequest()
+                .AppendPathSegment(attachment.DocumentId)
+                .AppendPathSegment(Uri.EscapeUriString(attachment.Name))
+                .WithHeader("If-Match", attachment.DocumentRev)
+                .GetStreamAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
 
         /// <inheritdoc />
         public async Task<string> DownloadAttachmentAsync(CouchAttachment attachment, string localFolderPath, string? localFileName = null, int bufferSize = 4096,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -128,7 +129,7 @@ namespace CouchDB.Driver
         /// <returns>A task that represents the asynchronous operation. The task result contains an array with a list of <see cref="CouchView{TKey, TValue, TSource}"/> for each query.</returns>
         Task<List<CouchView<TKey, TValue, TSource>>[]> GetViewQueryAsync<TKey, TValue>(string design, string view,
              IList<CouchViewOptions<TKey>> queries, CancellationToken cancellationToken = default);
-        
+
         /// <summary>
         /// Executes the specified view function from the specified design document using
         /// the queries endpoint. This returns one result for each query option in the provided sequence.
@@ -145,7 +146,7 @@ namespace CouchDB.Driver
 
         /// <summary>
         /// Since CouchDB v3, it is deprecated (a no-op).
-        /// 
+        ///
         /// Commits any recent changes to the specified database to disk. You should call this if you want to ensure that recent changes have been flushed.
         /// This function is likely not required, assuming you have the recommended configuration setting of delayed_commits=false, which requires CouchDB to ensure changes are written to disk before a 200 or similar result is returned.
         /// </summary>
@@ -217,6 +218,14 @@ namespace CouchDB.Driver
         Task DeleteIndexAsync(IndexInfo indexInfo, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Gets a stream for a specific attachment.
+        /// </summary>
+        /// <param name="attachment">The attachment to get the stream for.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the stream of the file.</returns>
+        Task<Stream> GetAttachmentStreamAsync(CouchAttachment attachment, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Asynchronously downloads a specific attachment.
         /// </summary>
         /// <param name="attachment">The attachment to download.</param>
@@ -252,7 +261,7 @@ namespace CouchDB.Driver
         /// The database name.
         /// </summary>
         string Database { get; }
-        
+
         /// <summary>
         /// Section to handle security operations.
         /// </summary>
